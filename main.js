@@ -29,8 +29,15 @@ const preloadImages = () => {
 
 const initAnimation = () => {
     const setCanvasSize = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        context.scale(dpr, dpr);
+        
+        // Logical dimensions for rendering
+        canvas.logicalWidth = window.innerWidth;
+        canvas.logicalHeight = window.innerHeight;
+        
         render();
     };
 
@@ -55,18 +62,21 @@ const initAnimation = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    render(); // Initial render
+    render();
 };
 
 const render = () => {
     const img = images[animationState.frame];
     if (!img || !img.complete) return;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    const width = canvas.logicalWidth || window.innerWidth;
+    const height = canvas.logicalHeight || window.innerHeight;
+
+    context.clearRect(0, 0, width, height);
     
-    const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-    const x = (canvas.width / 2) - (img.width / 2) * scale;
-    const y = (canvas.height / 2) - (img.height / 2) * scale;
+    const scale = Math.max(width / img.width, height / img.height);
+    const x = (width / 2) - (img.width / 2) * scale;
+    const y = (height / 2) - (img.height / 2) * scale;
     
     context.drawImage(img, x, y, img.width * scale, img.height * scale);
 };
