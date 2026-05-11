@@ -10,24 +10,25 @@ const animationState = {
     frame: 0
 };
 
+let isInitialized = false;
+
 // Preload images
 const preloadImages = () => {
     for (let i = 1; i <= frameCount; i++) {
         const img = new Image();
-        img.src = currentFrame(i);
         img.onload = () => {
-            if (images.length === 1) {
-                // Render the first frame as soon as it's ready
+            if (!isInitialized && i === 1) {
+                isInitialized = true;
                 initAnimation();
             }
         };
+        img.src = currentFrame(i);
         images.push(img);
     }
 };
 
 const initAnimation = () => {
     const setCanvasSize = () => {
-        // Use documentElement client width/height for more stability on mobile
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         render();
@@ -48,16 +49,13 @@ const initAnimation = () => {
         
         const frameIndex = Math.floor(progress * (frameCount - 1));
         if (frameIndex !== animationState.frame) {
-            updateFrame(frameIndex);
+            animationState.frame = frameIndex;
+            requestAnimationFrame(render);
         }
     };
 
     window.addEventListener('scroll', handleScroll);
-};
-
-const updateFrame = (index) => {
-    animationState.frame = index;
-    requestAnimationFrame(render);
+    render(); // Initial render
 };
 
 const render = () => {
@@ -66,11 +64,7 @@ const render = () => {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Calculate "cover" dimensions
     const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-    
-    // On mobile, if the image is too wide for the crop, we can slightly adjust
-    // But for now, standard cover is usually what's expected for "fitting the screen"
     const x = (canvas.width / 2) - (img.width / 2) * scale;
     const y = (canvas.height / 2) - (img.height / 2) * scale;
     
