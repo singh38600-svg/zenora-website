@@ -1,0 +1,14 @@
+{
+  "name": "zenora-website",
+  "version": "1.0.0",
+  "description": "Premium recruitment experience with scroll animation.",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve .",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
